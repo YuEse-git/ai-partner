@@ -22,6 +22,19 @@ st.title("AI智能伴侣")
 #系统提示词
 system_prompt = "你是一个 helpful的助手，能够帮助用户回答问题，解决问题。"
 
+#初始化聊天信息
+if 'messages' not in st.session_state:
+    st.session_state.messages = []
+
+#展示聊天信息
+for message in st.session_state.messages:
+    st.chat_message(message["role"]).write(message["content"])
+    # if message ["role"] == "user":
+    #     st.chat_message("user").write(message["content"])
+    # else:
+    #     st.chat_message("assistant").write(message["content"])
+
+
 #创建与AI大模型交互的客户端对象
 client = OpenAI(api_key=os.environ.get('DEEPSEEK_API_KEY'),base_url="https://api.deepseek.com")
 
@@ -30,6 +43,9 @@ prompt = st.chat_input("请输入您的问题：")
 if prompt:
     st.chat_message("user").write(prompt)
     print("-------->调用大模型，提示词：", prompt)
+
+    #添加用户消息到会话状态
+    st.session_state.messages.append({"role": "user", "content": prompt})
 
     #调用AI大模型
     response = client.chat.completions.create(
@@ -45,4 +61,5 @@ if prompt:
     #输出大模型的回复
     print("<-------- 大模型回复：", response.choices[0].message.content)
     st.chat_message("assistant").write(response.choices[0].message.content)
-
+    #保存大模型返回结果
+    st.session_state.messages.append({"role": "assistant", "content": response.choices[0].message.content})

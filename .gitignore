@@ -1,6 +1,4 @@
-.idea/
+.workbuddy/
+session/
 __pycache__/
-*.pyc
-.env
-.venv/
 venv/
